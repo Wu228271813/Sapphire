@@ -130,18 +130,27 @@ Check.equal(
     "local UI test bundle uses its own Face ID keychain service")
 
 let hardware = CapsuleScreenGeometry.placement(
-    safeAreaTop: 40, menuBarHeight: 24, hasHardwareNotch: true, scale: 2)
-Check.close(hardware.topInset, 43, "prototype gap is safe area plus 3 pt")
-Check.close(hardware.closedHeight, 42, "prototype idle height follows the safe area")
-Check.equal(hardware.closedWidth == 59, false, "prototype width is not a fixed 59 pt")
-let window = hardware.windowFrame(screenMidX: 864, screenMaxY: 1117)
-Check.close(window.maxY, 1117 - hardware.topInset, "open panel keeps the same top gap")
+    safeAreaTop: 40, menuBarHeight: 24, cameraWidth: 180, scale: 2)
+Check.close(hardware.topInset, 0, "prototype sits on the screen top")
+Check.equal(hardware.closedHeight >= 40, true, "prototype height covers the safe area")
+Check.equal(hardware.closedWidth >= 180, true, "prototype width covers the camera cutout")
+Check.equal(CapsuleScreenGeometry.statusBarWindowLevel, 25, "prototype uses the status-bar window level")
+Check.equal(CapsuleScreenGeometry.statusBarWindowLevel == 3, false, "prototype is not a floating level-3 window")
+let screenMidX = 1512.0 / 2
+let screenMaxY = 993.0
+let collapsed = hardware.windowFrame(expanded: false, screenMidX: screenMidX, screenMaxY: screenMaxY)
+let expanded = hardware.windowFrame(expanded: true, screenMidX: screenMidX, screenMaxY: screenMaxY)
+Check.close(collapsed.maxY, screenMaxY, "collapsed capsule top is the screen top")
+Check.close(expanded.maxY, collapsed.maxY, "open panel keeps the same top")
+Check.equal(expanded.y < collapsed.y, true, "open panel grows downward")
+Check.equal(collapsed.covers(hardware.reservedFrame(screenMidX: screenMidX, screenMaxY: screenMaxY)), true, "collapsed capsule covers the reserved notch")
+Check.equal(expanded.covers(collapsed), true, "open panel still covers the collapsed capsule")
 Check.close(hardware.hitRect(expanded: false).height, hardware.closedHeight, "collapsed hit area is the idle capsule")
-Check.equal(hardware.hitRect(expanded: false).contains(x: hardware.hitRect(expanded: false).midX, y: -1), false, "collapsed hit area does not cover the gap above the capsule")
+Check.equal(hardware.hitRect(expanded: true).height > hardware.hitRect(expanded: false).height, true, "open hit area is taller")
 
 let plain = CapsuleScreenGeometry.placement(
-    safeAreaTop: 0, menuBarHeight: 24, hasHardwareNotch: false, scale: 2)
-Check.close(plain.topInset, 3, "notchless prototype uses only the extra gap")
+    safeAreaTop: 0, menuBarHeight: 24, cameraWidth: nil, scale: 2)
+Check.close(plain.topInset, 0, "notchless prototype stays at the screen top")
 Check.equal(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: 700, rightMinX: 900), true, "a cutout between the menu areas is a hardware notch")
 Check.equal(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: nil, rightMinX: 900), false, "a safe area without a cutout is not a hardware notch")
 

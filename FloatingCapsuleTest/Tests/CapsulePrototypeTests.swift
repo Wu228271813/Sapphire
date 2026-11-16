@@ -8,31 +8,50 @@
 import XCTest
 
 final class CapsulePrototypeTests: XCTestCase {
-    func testHardwareNotchClearsTheLiveSafeAreaAndKeepsThatGapWhenOpen() {
-        let idle = CapsuleScreenGeometry.placement(
-            safeAreaTop: 40, menuBarHeight: 24, hasHardwareNotch: true, scale: 2
+    func testHardwareNotchCoversTheReservedAreaAtTheScreenTop() {
+        let camera: Double = 180
+        let placement = CapsuleScreenGeometry.placement(
+            safeAreaTop: 40, menuBarHeight: 24, cameraWidth: camera, scale: 2
         )
-        let open = idle
-        XCTAssertEqual(idle.topInset, 43)
-        XCTAssertEqual(open.topInset, idle.topInset)
-        XCTAssertEqual(idle.closedHeight, 42)
-        XCTAssertNotEqual(idle.closedWidth, 59)
-        let frame = idle.windowFrame(screenMidX: 864, screenMaxY: 1117)
-        XCTAssertEqual(frame.maxY, 1117 - idle.topInset)
-        XCTAssertEqual(idle.hitRect(expanded: true).y, 0)
-        XCTAssertEqual(idle.hitRect(expanded: false).height, idle.closedHeight)
-        XCTAssertLessThan(idle.hitRect(expanded: false).height, idle.hitRect(expanded: true).height)
+        XCTAssertEqual(placement.topInset, 0)
+        XCTAssertGreaterThanOrEqual(placement.closedHeight, 40)
+        XCTAssertGreaterThanOrEqual(placement.closedHeight, 40 + placement.bottomCornerRadius)
+        XCTAssertGreaterThanOrEqual(placement.closedWidth, camera)
+        XCTAssertGreaterThanOrEqual(placement.closedWidth, camera + CapsuleScreenGeometry.notchWidthPadding)
+        XCTAssertEqual(CapsuleScreenGeometry.statusBarWindowLevel, 25)
+        XCTAssertNotEqual(CapsuleScreenGeometry.statusBarWindowLevel, 3)
+
+        let screenMidX = 1512.0 / 2
+        let screenMaxY = 993.0
+        let collapsed = placement.windowFrame(expanded: false, screenMidX: screenMidX, screenMaxY: screenMaxY)
+        let expanded = placement.windowFrame(expanded: true, screenMidX: screenMidX, screenMaxY: screenMaxY)
+        XCTAssertEqual(collapsed.maxY, screenMaxY)
+        XCTAssertEqual(expanded.maxY, collapsed.maxY)
+        XCTAssertEqual(collapsed.midX, screenMidX)
+        XCTAssertEqual(expanded.midX, screenMidX)
+        XCTAssertGreaterThan(expanded.height, collapsed.height)
+        XCTAssertLessThan(expanded.y, collapsed.y)
+        XCTAssertTrue(collapsed.covers(placement.reservedFrame(screenMidX: screenMidX, screenMaxY: screenMaxY)))
+        XCTAssertTrue(expanded.covers(collapsed))
+        XCTAssertFalse(collapsed.contains(x: collapsed.midX, y: screenMaxY + 0.1))
+        XCTAssertEqual(placement.hitRect(expanded: false).height, placement.closedHeight)
+        XCTAssertEqual(placement.hitRect(expanded: true).y, placement.hitRect(expanded: false).y)
+        XCTAssertGreaterThan(placement.hitRect(expanded: true).height, placement.hitRect(expanded: false).height)
     }
 
-    func testNotchlessDisplayDoesNotAddASafeAreaGap() {
+    func testNotchlessDisplaySitsInTheMenuBarBand() {
         XCTAssertFalse(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 0, leftMaxX: 10, rightMinX: 40))
         XCTAssertFalse(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: nil, rightMinX: 40))
         XCTAssertTrue(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: 700, rightMinX: 900))
         let placement = CapsuleScreenGeometry.placement(
-            safeAreaTop: 0, menuBarHeight: 24, hasHardwareNotch: false, scale: 2
+            safeAreaTop: 0, menuBarHeight: 24, cameraWidth: nil, scale: 2
         )
-        XCTAssertEqual(placement.topInset, 3)
+        XCTAssertEqual(placement.topInset, 0)
         XCTAssertFalse(placement.hasHardwareNotch)
+        XCTAssertGreaterThanOrEqual(placement.closedHeight, 24)
+        let frame = placement.windowFrame(expanded: false, screenMidX: 756, screenMaxY: 993)
+        XCTAssertEqual(frame.maxY, 993)
+        XCTAssertTrue(frame.covers(placement.reservedFrame(screenMidX: 756, screenMaxY: 993)))
     }
 
     func testHoverOpensAndLeaveCollapsesUnlessPinned() {
@@ -50,15 +69,18 @@ final class CapsulePrototypeTests: XCTestCase {
         XCTAssertFalse(interaction.panelOpen)
     }
 
-    func testCollapsedHitAreaDoesNotCoverTheSafeAreaGap() {
+    func testFractionalSafeAreaStaysCoveredWhenSnapped() {
         let placement = CapsuleScreenGeometry.placement(
-            safeAreaTop: 37.5, menuBarHeight: 24, hasHardwareNotch: true, scale: 2
+            safeAreaTop: 37.5, menuBarHeight: 24, cameraWidth: 166.25, scale: 2
         )
-        XCTAssertEqual(placement.topInset, 40.5)
-        let window = placement.windowFrame(screenMidX: 500, screenMaxY: 1000)
-        XCTAssertEqual(window.maxY, 1000 - 40.5)
+        XCTAssertEqual(placement.topInset, 0)
+        XCTAssertGreaterThanOrEqual(placement.closedHeight, 37.5)
+        XCTAssertGreaterThanOrEqual(placement.closedWidth, 166.25)
+        let window = placement.windowFrame(expanded: false, screenMidX: 500, screenMaxY: 1000)
+        XCTAssertEqual(window.maxY, 1000)
+        XCTAssertTrue(window.covers(placement.reservedFrame(screenMidX: 500, screenMaxY: 1000)))
         let collapsed = placement.hitRect(expanded: false)
         XCTAssertEqual(collapsed.y, 0)
-        XCTAssertFalse(collapsed.contains(x: collapsed.midX, y: -1))
+        XCTAssertTrue(collapsed.contains(x: collapsed.midX, y: 0))
     }
 }

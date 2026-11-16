@@ -8,7 +8,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 DEST="${SAPPHIRE_LOCAL_UI_TEST_ROOT:-$HOME/SapphireFloatingCapsuleTest}"
 DERIVED="$DEST/DerivedDataUI"
 ORIG="/Applications/Sapphire.app"
-APP="$DERIVED/Build/Products/Debug/SapphireFloatingCapsuleTest.app"
+APP="$DERIVED/Build/Products/Release/SapphireFloatingCapsuleTest.app"
 
 if ! command -v xcodebuild >/dev/null 2>&1; then
   echo "xcodebuild is not on this machine. This script has to run on the Mac." >&2
@@ -24,13 +24,24 @@ fi
 mkdir -p "$DERIVED"
 cd "$ROOT"
 
+# Release is the app to open. It does not inject the debugger, a debug dylib, or
+# get-task-allow. Ad-hoc signing does not keep a hardened-runtime flag; this
+# script does not turn off OS protections. Tests stay on the Debug configuration.
+xcodebuild \
+  -project FloatingCapsuleTest/FloatingCapsuleTest.xcodeproj \
+  -scheme FloatingCapsuleTest \
+  -configuration Release \
+  -destination "platform=macOS,arch=arm64" \
+  -derivedDataPath "$DERIVED" \
+  build
+
 xcodebuild \
   -project FloatingCapsuleTest/FloatingCapsuleTest.xcodeproj \
   -scheme FloatingCapsuleTest \
   -configuration Debug \
   -destination "platform=macOS,arch=arm64" \
   -derivedDataPath "$DERIVED" \
-  build test
+  test
 
 if [[ -n "$ORIG_STAMP" ]]; then
   NOW="$(stat -f %m "$ORIG")"
@@ -60,4 +71,5 @@ fi
 echo "Built: $APP"
 echo "Bundle id: $IDENTIFIER"
 echo "Launch with: open \"$APP\""
+echo "Quit from the panel or with Command-Q. That closes only this test."
 echo "Do not copy the result to /Applications."

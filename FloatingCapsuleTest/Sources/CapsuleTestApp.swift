@@ -32,10 +32,10 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
         let placement = CapsuleScreenGeometry.placement(
             safeAreaTop: reading.safeAreaTop,
             menuBarHeight: reading.menuBarHeight,
-            hasHardwareNotch: reading.hasHardwareNotch,
+            cameraWidth: reading.cameraWidth,
             scale: reading.scale
         )
-        let frame = placement.windowFrame(screenMidX: reading.midX, screenMaxY: reading.maxY)
+        let frame = placement.windowFrame(expanded: false, screenMidX: reading.midX, screenMaxY: reading.maxY)
         let rect = NSRect(x: frame.x, y: frame.y, width: frame.width, height: frame.height)
         let view = CapsulePrototypeView(placement: placement, reading: reading)
         if let panel {
@@ -49,8 +49,8 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
                 defer: false
             )
             window.isFloatingPanel = true
-            window.level = .floating
-            window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary]
+            window.level = NSWindow.Level(rawValue: CapsuleScreenGeometry.statusBarWindowLevel)
+            window.collectionBehavior = [.canJoinAllSpaces, .stationary, .fullScreenAuxiliary, .ignoresCycle]
             window.isOpaque = false
             window.backgroundColor = .clear
             window.hasShadow = false
@@ -60,7 +60,23 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
             window.contentView = view
             window.orderFrontRegardless()
             panel = window
+            installQuitMenu()
         }
+    }
+
+    private func installQuitMenu() {
+        guard NSApp.mainMenu == nil else { return }
+        let menu = NSMenu()
+        let appItem = NSMenuItem()
+        menu.addItem(appItem)
+        let appMenu = NSMenu()
+        appMenu.addItem(NSMenuItem(
+            title: "Quit Sapphire Floating Test",
+            action: #selector(NSApplication.terminate(_:)),
+            keyEquivalent: "q"
+        ))
+        appItem.submenu = appMenu
+        NSApp.mainMenu = menu
     }
 
     private static func preferredScreen() -> NSScreen? {
@@ -74,6 +90,7 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
     struct ScreenReading {
         var safeAreaTop: Double
         var menuBarHeight: Double
+        var cameraWidth: Double?
         var hasHardwareNotch: Bool
         var scale: Double
         var midX: Double
@@ -83,13 +100,17 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
     private static func reading(of screen: NSScreen?) -> ScreenReading {
         guard let screen else {
             return ScreenReading(
-                safeAreaTop: 0, menuBarHeight: 24, hasHardwareNotch: false,
+                safeAreaTop: 0, menuBarHeight: 24, cameraWidth: nil, hasHardwareNotch: false,
                 scale: 2, midX: 400, maxY: 800
             )
         }
         let safeTop = Double(screen.safeAreaInsets.top)
         let left = screen.auxiliaryTopLeftArea?.maxX
         let right = screen.auxiliaryTopRightArea?.minX
+        let camera = CapsuleScreenGeometry.cameraWidth(
+            leftMaxX: left.map(Double.init),
+            rightMinX: right.map(Double.init)
+        )
         let notch = CapsuleScreenGeometry.hasHardwareNotch(
             safeAreaTop: safeTop,
             leftMaxX: left.map(Double.init),
@@ -100,6 +121,7 @@ final class CapsuleTestAppDelegate: NSObject, NSApplicationDelegate {
         return ScreenReading(
             safeAreaTop: safeTop,
             menuBarHeight: menuBar,
+            cameraWidth: camera,
             hasHardwareNotch: notch,
             scale: Double(screen.backingScaleFactor),
             midX: Double(screen.frame.midX),
@@ -113,6 +135,7 @@ final class CapsulePrototypeView: NSView {
     private let reading: CapsuleTestAppDelegate.ScreenReading
     private var interaction = CapsuleInteraction()
     private var tracking: NSTrackingArea?
+    private var syncingFrame = false
     private var clock: Timer?
     private let timeLabel = NSTextField(labelWithString: "")
     private let detail = NSTextField(wrappingLabelWithString: "")
@@ -154,10 +177,10 @@ final class CapsulePrototypeView: NSView {
 
     override func layout() {
         super.layout()
+        syncWindowFrame()
         let open = interaction.panelOpen
-        let hit = placement.hitRect(expanded: open)
-        let capsule = NSRect(x: hit.x, y: hit.y, width: hit.width, height: open ? placement.closedHeight : hit.height)
-        timeLabel.frame = capsule.insetBy(dx: 12, dy: 6)
+        let band = NSRect(x: 0, y: 0, width: bounds.width, height: placement.reservedHeight)
+        timeLabel.frame = band.insetBy(dx: 12, dy: 4)
         detail.isHidden = !open
         pinButton.isHidden = !open
         quitButton.isHidden = !open
@@ -172,21 +195,68 @@ final class CapsulePrototypeView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let open = interaction.panelOpen
-        let hit = placement.hitRect(expanded: open)
-        let rect = NSRect(x: hit.x, y: hit.y, width: hit.width, height: hit.height)
-        let radius = open ? 22 : min(rect.width, rect.height) / 2
-        let path = NSBezierPath(roundedRect: rect, xRadius: radius, yRadius: radius)
         NSColor.black.setFill()
+        let band = NSRect(
+            x: bounds.minX,
+            y: bounds.minY,
+            width: bounds.width,
+            height: min(bounds.height, CGFloat(placement.reservedHeight))
+        )
+        band.fill()
+        let path = interaction.panelOpen
+            ? NSBezierPath(roundedRect: bounds, xRadius: 16, yRadius: 16)
+            : bottomRounded(bounds, radius: placement.bottomCornerRadius)
         path.fill()
+    }
+
+    /// Square across the top, where the camera is, and rounded only along the bottom.
+    private func bottomRounded(_ rect: NSRect, radius: Double) -> NSBezierPath {
+        let r = min(CGFloat(radius), rect.width / 2, max(0, rect.height / 2))
+        let path = NSBezierPath()
+        path.move(to: NSPoint(x: rect.minX, y: rect.minY))
+        path.line(to: NSPoint(x: rect.maxX, y: rect.minY))
+        path.line(to: NSPoint(x: rect.maxX, y: rect.maxY - r))
+        path.appendArc(
+            withCenter: NSPoint(x: rect.maxX - r, y: rect.maxY - r),
+            radius: r,
+            startAngle: 0,
+            endAngle: 90,
+            clockwise: false
+        )
+        path.line(to: NSPoint(x: rect.minX + r, y: rect.maxY))
+        path.appendArc(
+            withCenter: NSPoint(x: rect.minX + r, y: rect.maxY - r),
+            radius: r,
+            startAngle: 90,
+            endAngle: 180,
+            clockwise: false
+        )
+        path.close()
+        return path
+    }
+
+    private func syncWindowFrame() {
+        guard let window, !syncingFrame else { return }
+        let frame = placement.windowFrame(
+            expanded: interaction.panelOpen,
+            screenMidX: reading.midX,
+            screenMaxY: reading.maxY
+        )
+        let rect = NSRect(x: frame.x, y: frame.y, width: frame.width, height: frame.height)
+        guard abs(window.frame.minX - rect.minX) > 0.5
+            || abs(window.frame.minY - rect.minY) > 0.5
+            || abs(window.frame.width - rect.width) > 0.5
+            || abs(window.frame.height - rect.height) > 0.5 else { return }
+        syncingFrame = true
+        window.setFrame(rect, display: true)
+        syncingFrame = false
     }
 
     override func updateTrackingAreas() {
         super.updateTrackingAreas()
         if let tracking { removeTrackingArea(tracking) }
-        let hit = placement.hitRect(expanded: interaction.panelOpen)
         let area = NSTrackingArea(
-            rect: NSRect(x: hit.x, y: hit.y, width: hit.width, height: hit.height),
+            rect: bounds,
             options: [.mouseEnteredAndExited, .activeAlways],
             owner: self,
             userInfo: nil
@@ -213,13 +283,14 @@ final class CapsulePrototypeView: NSView {
     private func refreshText() {
         timeLabel.stringValue = Self.time.string(from: Date())
         let notchLine = reading.hasHardwareNotch
-            ? "Hardware notch. Clearance is the live safe area plus \(Int(CapsuleScreenGeometry.extraGap)) pt. The camera housing stays visible."
-            : "This display has no hardware notch. The gap is only the extra \(Int(CapsuleScreenGeometry.extraGap)) pt."
+            ? "Covering the hardware notch at the top of this screen. The camera housing stays where it is."
+            : "This display has no hardware notch. The capsule sits in the menu-bar band."
+        let width = reading.cameraWidth.map { String(format: "%.1f", $0) } ?? "none"
         detail.stringValue = """
-        Floating capsule test. Not the full Sapphire app.
+        Notch test. Not the full Sapphire app. Quit closes only this test.
         Local time only. Weather, music, and continuity are not connected.
         \(notchLine)
-        Top gap: \(placement.topInset) pt.
+        Safe area \(reading.safeAreaTop) pt. Camera width \(width) pt.
         """
     }
 
