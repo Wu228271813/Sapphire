@@ -1,0 +1,337 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		FC0000000000000000000001 /* CapsuleInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000011 /* CapsuleInteraction.swift */; };
+		FC0000000000000000000002 /* CapsuleScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000012 /* CapsuleScreenGeometry.swift */; };
+		FC0000000000000000000003 /* CapsuleTestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000013 /* CapsuleTestApp.swift */; };
+		FC0000000000000000000004 /* NotchFloatingCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000014 /* NotchFloatingCapsule.swift */; };
+		FC0000000000000000000005 /* CapsuleInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000011 /* CapsuleInteraction.swift */; };
+		FC0000000000000000000006 /* CapsuleScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000012 /* CapsuleScreenGeometry.swift */; };
+		FC0000000000000000000007 /* NotchFloatingCapsule.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000014 /* NotchFloatingCapsule.swift */; };
+		FC0000000000000000000008 /* CapsulePrototypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000015 /* CapsulePrototypeTests.swift */; };
+		FC0000000000000000000009 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FC0000000000000000000016 /* XCTest.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		FC0000000000000000000011 /* CapsuleInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleInteraction.swift; sourceTree = "<group>"; };
+		FC0000000000000000000012 /* CapsuleScreenGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleScreenGeometry.swift; sourceTree = "<group>"; };
+		FC0000000000000000000013 /* CapsuleTestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsuleTestApp.swift; sourceTree = "<group>"; };
+		FC0000000000000000000014 /* NotchFloatingCapsule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = NotchFloatingCapsule.swift; path = ../Sapphire/Notch/NotchFloatingCapsule.swift; sourceTree = SOURCE_ROOT; };
+		FC0000000000000000000015 /* CapsulePrototypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapsulePrototypeTests.swift; sourceTree = "<group>"; };
+		FC0000000000000000000016 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
+		FC0000000000000000000021 /* SapphireFloatingCapsuleTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SapphireFloatingCapsuleTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		FC0000000000000000000022 /* FloatingCapsuleTestTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FloatingCapsuleTestTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FC0000000000000000000031 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC0000000000000000000032 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC0000000000000000000009 /* XCTest.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FC0000000000000000000040 = {
+			isa = PBXGroup;
+			children = (
+				FC0000000000000000000041 /* Sources */,
+				FC0000000000000000000042 /* Tests */,
+				FC0000000000000000000014 /* NotchFloatingCapsule.swift */,
+				FC0000000000000000000043 /* Frameworks */,
+				FC0000000000000000000044 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FC0000000000000000000041 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				FC0000000000000000000011 /* CapsuleInteraction.swift */,
+				FC0000000000000000000012 /* CapsuleScreenGeometry.swift */,
+				FC0000000000000000000013 /* CapsuleTestApp.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+		FC0000000000000000000042 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				FC0000000000000000000015 /* CapsulePrototypeTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+		FC0000000000000000000043 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FC0000000000000000000016 /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		FC0000000000000000000044 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FC0000000000000000000021 /* SapphireFloatingCapsuleTest.app */,
+				FC0000000000000000000022 /* FloatingCapsuleTestTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FC0000000000000000000051 /* FloatingCapsuleTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC0000000000000000000071 /* Build configuration list for PBXNativeTarget "FloatingCapsuleTest" */;
+			buildPhases = (
+				FC0000000000000000000061 /* Sources */,
+				FC0000000000000000000031 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FloatingCapsuleTest;
+			productName = FloatingCapsuleTest;
+			productReference = FC0000000000000000000021 /* SapphireFloatingCapsuleTest.app */;
+			productType = "com.apple.product-type.application";
+		};
+		FC0000000000000000000052 /* FloatingCapsuleTestTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FC0000000000000000000072 /* Build configuration list for PBXNativeTarget "FloatingCapsuleTestTests" */;
+			buildPhases = (
+				FC0000000000000000000062 /* Sources */,
+				FC0000000000000000000032 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = FloatingCapsuleTestTests;
+			productName = FloatingCapsuleTestTests;
+			productReference = FC0000000000000000000022 /* FloatingCapsuleTestTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FC0000000000000000000050 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 2650;
+			};
+			buildConfigurationList = FC0000000000000000000070 /* Build configuration list for PBXProject "FloatingCapsuleTest" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = FC0000000000000000000040;
+			productRefGroup = FC0000000000000000000044 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FC0000000000000000000051 /* FloatingCapsuleTest */,
+				FC0000000000000000000052 /* FloatingCapsuleTestTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FC0000000000000000000061 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC0000000000000000000001 /* CapsuleInteraction.swift in Sources */,
+				FC0000000000000000000002 /* CapsuleScreenGeometry.swift in Sources */,
+				FC0000000000000000000003 /* CapsuleTestApp.swift in Sources */,
+				FC0000000000000000000004 /* NotchFloatingCapsule.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FC0000000000000000000062 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FC0000000000000000000005 /* CapsuleInteraction.swift in Sources */,
+				FC0000000000000000000006 /* CapsuleScreenGeometry.swift in Sources */,
+				FC0000000000000000000007 /* NotchFloatingCapsule.swift in Sources */,
+				FC0000000000000000000008 /* CapsulePrototypeTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FC0000000000000000000081 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_DYNAMIC_NO_PIC = NO;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		FC0000000000000000000082 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		FC0000000000000000000083 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sapphire Floating Test";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Sapphire prototype, GNU AGPL-3.0.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 3.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.sapphire.floatingcapsule.test;
+				PRODUCT_NAME = SapphireFloatingCapsuleTest;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Debug;
+		};
+		FC0000000000000000000084 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "";
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Sapphire Floating Test";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Sapphire prototype, GNU AGPL-3.0.";
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 3.5;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.sapphire.floatingcapsule.test;
+				PRODUCT_NAME = SapphireFloatingCapsuleTest;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+			};
+			name = Release;
+		};
+		FC0000000000000000000085 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.sapphire.floatingcapsule.test.tests;
+				PRODUCT_NAME = FloatingCapsuleTestTests;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Debug;
+		};
+		FC0000000000000000000086 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.local.sapphire.floatingcapsule.test.tests;
+				PRODUCT_NAME = FloatingCapsuleTestTests;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FC0000000000000000000070 /* Build configuration list for PBXProject "FloatingCapsuleTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC0000000000000000000081 /* Debug */,
+				FC0000000000000000000082 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC0000000000000000000071 /* Build configuration list for PBXNativeTarget "FloatingCapsuleTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC0000000000000000000083 /* Debug */,
+				FC0000000000000000000084 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FC0000000000000000000072 /* Build configuration list for PBXNativeTarget "FloatingCapsuleTestTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FC0000000000000000000085 /* Debug */,
+				FC0000000000000000000086 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FC0000000000000000000050 /* Project object */;
+}

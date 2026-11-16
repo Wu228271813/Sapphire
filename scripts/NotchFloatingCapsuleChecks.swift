@@ -128,4 +128,33 @@ Check.equal(
     SapphireLocalIsolation.faceIDKeychainService(forBundleIdentifier: SapphireLocalIsolation.localUITestBundleIdentifier),
     "com.local.sapphire.floatingcapsule.test.faceid.keychain",
     "local UI test bundle uses its own Face ID keychain service")
+
+let hardware = CapsuleScreenGeometry.placement(
+    safeAreaTop: 40, menuBarHeight: 24, hasHardwareNotch: true, scale: 2)
+Check.close(hardware.topInset, 43, "prototype gap is safe area plus 3 pt")
+Check.close(hardware.closedHeight, 42, "prototype idle height follows the safe area")
+Check.equal(hardware.closedWidth == 59, false, "prototype width is not a fixed 59 pt")
+let window = hardware.windowFrame(screenMidX: 864, screenMaxY: 1117)
+Check.close(window.maxY, 1117 - hardware.topInset, "open panel keeps the same top gap")
+Check.close(hardware.hitRect(expanded: false).height, hardware.closedHeight, "collapsed hit area is the idle capsule")
+Check.equal(hardware.hitRect(expanded: false).contains(x: hardware.hitRect(expanded: false).midX, y: -1), false, "collapsed hit area does not cover the gap above the capsule")
+
+let plain = CapsuleScreenGeometry.placement(
+    safeAreaTop: 0, menuBarHeight: 24, hasHardwareNotch: false, scale: 2)
+Check.close(plain.topInset, 3, "notchless prototype uses only the extra gap")
+Check.equal(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: 700, rightMinX: 900), true, "a cutout between the menu areas is a hardware notch")
+Check.equal(CapsuleScreenGeometry.hasHardwareNotch(safeAreaTop: 32, leftMaxX: nil, rightMinX: 900), false, "a safe area without a cutout is not a hardware notch")
+
+var interaction = CapsuleInteraction()
+Check.equal(interaction.panelOpen, false, "prototype starts collapsed")
+interaction.pointerEntered()
+Check.equal(interaction.panelOpen, true, "hover opens the panel")
+interaction.pointerExited()
+Check.equal(interaction.panelOpen, false, "leave collapses the panel")
+interaction.pointerEntered()
+interaction.togglePinned()
+interaction.pointerExited()
+Check.equal(interaction.panelOpen, true, "pin keeps the panel open")
+interaction.togglePinned()
+Check.equal(interaction.panelOpen, false, "unpin allows collapse")
 }
