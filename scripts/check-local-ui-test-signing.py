@@ -84,10 +84,14 @@ if "FileProviderItem.swift" in provider_sources or "HostConnection.swift" in pro
     failures.append("File Provider still compiles private sources that are not in this tree")
 if "PublicExtensionStubs/FileProvider/FileProviderExtension.swift" not in project:
     failures.append("File Provider does not compile the tracked public stub")
-if "SAPPHIRE_LOCAL_ENABLE_PREVIEWS = YES;" not in project:
-    failures.append("shipping builds lost the SwiftUI preview default")
+if 'EXCLUDED_SOURCE_FILE_NAMES = "*/Sapphire/Stubs/*";' in project:
+    failures.append("the app target still unconditionally excludes the public stubs")
+if "SAPPHIRE_APP_EXCLUDED_SOURCES = \"\";" not in project:
+    failures.append("the public build does not default to compiling Sapphire/Stubs")
 if 'ENABLE_PREVIEWS = "$(SAPPHIRE_LOCAL_ENABLE_PREVIEWS)";' not in project:
     failures.append("previews are not selected by the local test variable")
+if "SAPPHIRE_LOCAL_ENABLE_PREVIEWS = YES;" not in project:
+    failures.append("shipping builds lost the SwiftUI preview default")
 
 bundle_ids = re.findall(r"PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);", project)
 if bundle_ids.count('"$(SAPPHIRE_APP_BUNDLE_IDENTIFIER)"') != 2:
