@@ -25,23 +25,22 @@ fi
 mkdir -p "$DERIVED"
 cd "$ROOT"
 
+# Scoped SAPPHIRE_* settings are read only by targets in this project.
+# Standard settings such as CODE_SIGN_ENTITLEMENTS are not passed here:
+# xcodebuild would apply them to Swift package targets, which then look for
+# Sapphire/SapphireLocalUITest.entitlements inside their own checkouts.
 xcodebuild \
   -project Sapphire.xcodeproj \
   -scheme Sapphire \
   -configuration Debug \
   -destination "platform=macOS,arch=arm64" \
   -derivedDataPath "$DERIVED" \
-  ARCHS=arm64 \
-  ONLY_ACTIVE_ARCH=YES \
-  CODE_SIGN_STYLE=Manual \
-  "CODE_SIGN_IDENTITY=-" \
-  "DEVELOPMENT_TEAM=" \
-  CODE_SIGNING_ALLOWED=YES \
-  CODE_SIGNING_REQUIRED=YES \
-  AD_HOC_CODE_SIGNING_ALLOWED=YES \
-  CODE_SIGN_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements \
+  SAPPHIRE_LOCAL_CODE_SIGN_STYLE=Manual \
+  SAPPHIRE_LOCAL_CODE_SIGN_IDENTITY=- \
+  SAPPHIRE_LOCAL_DEVELOPMENT_TEAM= \
+  SAPPHIRE_LOCAL_REGISTER_APP_GROUPS=NO \
   SAPPHIRE_APP_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements \
-  REGISTER_APP_GROUPS=NO \
+  SAPPHIRE_WIDGET_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements \
   SAPPHIRE_SKIP_CRASHLYTICS_UPLOAD=YES \
   SAPPHIRE_APP_BUNDLE_IDENTIFIER=com.local.sapphire.floatingcapsule.test \
   SAPPHIRE_APP_PRODUCT_NAME=SapphireFloatingCapsuleTest \
