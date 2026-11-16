@@ -155,6 +155,32 @@ final class NotchDisplayMetricsTests: XCTestCase {
         XCTAssertEqual(notIsland, CGSize(width: 100, height: 20))
     }
 
+    func testHardwareNotchCapsuleClearsTheMeasuredSafeAreaAndStaysCompact() {
+        let metrics = resolve(notched)
+        XCTAssertEqual(
+            NotchDisplayMetrics.floatingIslandTopInset(
+                userOffset: 3,
+                islandHeight: 34,
+                menuBarHeight: metrics.menuBarHeight,
+                scale: 2,
+                safeAreaTop: metrics.menuBarHeight,
+                hasHardwareNotch: true
+            ),
+            35
+        )
+        let floating = NotchDisplayMetrics.resolvedClosedSize(
+            measured: metrics, customWidth: 0, customHeight: 0,
+            isFloatingIsland: true, floatingIslandMinimumHeight: 30
+        )
+        XCTAssertEqual(floating, CGSize(width: 119, height: 34))
+        XCTAssertNotEqual(floating.width, metrics.closedSize.width)
+        let custom = NotchDisplayMetrics.resolvedClosedSize(
+            measured: metrics, customWidth: 100, customHeight: 0,
+            isFloatingIsland: true, floatingIslandMinimumHeight: 30
+        )
+        XCTAssertEqual(custom, CGSize(width: 100, height: 34))
+    }
+
     func testFloatingIslandTopInsetCentresOnlyInATallerBar() {
         XCTAssertEqual(NotchDisplayMetrics.floatingIslandTopInset(userOffset: 8, islandHeight: 32, menuBarHeight: 24, scale: 2), 8)
         XCTAssertEqual(NotchDisplayMetrics.floatingIslandTopInset(userOffset: 0, islandHeight: 32, menuBarHeight: 37, scale: 2), 0)

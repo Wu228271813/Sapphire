@@ -1014,6 +1014,7 @@ struct Settings: Codable, Equatable {
     var perDisplayFloatingIsland: [String: Bool] = [:]
     var perDisplayFloatingIslandTopOffset: [String: CGFloat] = [:]
     var perDisplayFloatingIslandStyle: [String: FloatingIslandStyle] = [:]
+    var perDisplayFloatingCapsuleBelowHardwareNotch: [String: Bool] = [:]
     var perDisplayNotchWidgetAppearance: [String: NotchAppearanceSettings] = [:]
     var perDisplayNotchLiveActivityAppearance: [String: NotchAppearanceSettings] = [:]
 
@@ -1226,6 +1227,10 @@ struct Settings: Codable, Equatable {
             return perDisplay
         }
         return floatingIslandOnNotchlessDisplays
+    }
+
+    func resolvedFloatingCapsuleBelowHardwareNotch(forDisplayID displayID: String?) -> Bool {
+        DisplaySettingsKey.value(in: perDisplayFloatingCapsuleBelowHardwareNotch, for: displayID) ?? false
     }
 
     func resolvedNotchWidgetAppearance(forDisplayID displayID: String?) -> NotchAppearanceSettings {

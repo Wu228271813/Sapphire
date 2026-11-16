@@ -270,7 +270,10 @@ private struct PerDisplaySettingsCard: View {
     @ViewBuilder
     private var notchRows: some View {
         sizeRow.padding()
-        if !NotchConfiguration.hasHardwareNotch(on: screen) {
+        if NotchConfiguration.hasHardwareNotch(on: screen) {
+            Divider().padding(.leading, 20)
+            hardwareNotchCapsuleRows
+        } else {
             Divider().padding(.leading, 20)
             floatingIslandRows
         }
@@ -311,6 +314,28 @@ private struct PerDisplaySettingsCard: View {
     }
 
     @ViewBuilder
+    private var hardwareNotchCapsuleRows: some View {
+        let isOn = settings.settings.value.resolvedFloatingCapsuleBelowHardwareNotch(forDisplayID: displayID)
+        HStack(spacing: 12) {
+            SettingsRowLabel(
+                title: "Float Below the Hardware Notch",
+                description: "Draw a compact capsule under the camera instead of filling the physical notch. The hardware notch stays visible, so both shapes show. The capsule, its open panel, and the hover area start below this display's safe area."
+            )
+            Spacer(minLength: 8)
+            SettingsSwitch(title: "Float Below the Hardware Notch", isOn: hardwareCapsuleBinding)
+        }
+        .padding()
+        .help("Off keeps Sapphire inside the physical notch. On, hover opens Sapphire's panel and leaving it collapses the panel unless it is pinned.")
+        if isOn {
+            islandSpacingControls(
+                offsetTitle: "Extra Gap",
+                offsetDescription: "Added below the safe area. It does not move the capsule up into the camera.",
+                offsetAccessibilityLabel: "Extra Gap"
+            )
+        }
+    }
+
+    @ViewBuilder
     private var floatingIslandRows: some View {
         let isIsland = settings.settings.value.resolvedFloatingIsland(forDisplayID: displayID)
         HStack(spacing: 12) {
@@ -323,65 +348,78 @@ private struct PerDisplaySettingsCard: View {
         }
         .padding()
         if isIsland {
-            Button {
-                withAnimation(.snappy) { showsIslandAdvanced.toggle() }
-            } label: {
-                HStack(spacing: 6) {
-                    Text("Advanced")
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .rotationEffect(.degrees(showsIslandAdvanced ? 90 : 0))
-                    Spacer()
-                }
-                .foregroundColor(.secondary)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(.plain)
-            .padding([.horizontal, .bottom])
-            .accessibilityLabel(showsIslandAdvanced ? "Hide advanced island settings" : "Show advanced island settings")
+            islandSpacingControls(
+                offsetTitle: "Island Top Offset",
+                offsetDescription: "Distance from the top edge.",
+                offsetAccessibilityLabel: "Island Top Offset"
+            )
+        }
+    }
 
-            if showsIslandAdvanced {
+    @ViewBuilder
+    private func islandSpacingControls(
+        offsetTitle: String,
+        offsetDescription: String,
+        offsetAccessibilityLabel: String
+    ) -> some View {
+        Button {
+            withAnimation(.snappy) { showsIslandAdvanced.toggle() }
+        } label: {
+            HStack(spacing: 6) {
+                Text("Advanced")
+                Image(systemName: "chevron.right")
+                    .font(.caption.weight(.semibold))
+                    .rotationEffect(.degrees(showsIslandAdvanced ? 90 : 0))
+                Spacer()
+            }
+            .foregroundColor(.secondary)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .padding([.horizontal, .bottom])
+        .accessibilityLabel(showsIslandAdvanced ? "Hide advanced island settings" : "Show advanced island settings")
+
+        if showsIslandAdvanced {
+            VStack(spacing: 0) {
+                FloatingIslandPreview(config: ResolvedNotchConfiguration(from: settings.settings.value, screen: screen))
+                    .padding(.horizontal)
+                    .padding(.bottom)
+
+                HStack(spacing: 12) {
+                    SettingsRowLabel(title: offsetTitle, description: offsetDescription)
+                    Spacer(minLength: 8)
+                    DeferredValueEditor(value: islandTopOffsetBinding) { draft, onEditingChanged in
+                        HStack(spacing: 8) {
+                            Slider(value: draft, in: 0...40, step: 1, onEditingChanged: onEditingChanged)
+                                .frame(width: 150)
+                                .accessibilityLabel(Text(offsetAccessibilityLabel))
+                            Text("\(Int(draft.wrappedValue)) pt")
+                                .monospacedDigit()
+                                .frame(width: 42, alignment: .trailing)
+                        }
+                    }
+                }
+                .padding([.horizontal, .bottom])
+
                 VStack(spacing: 0) {
-                    FloatingIslandPreview(config: ResolvedNotchConfiguration(from: settings.settings.value, screen: screen))
-                        .padding(.horizontal)
-                        .padding(.bottom)
-
-                    HStack(spacing: 12) {
-                        SettingsRowLabel(title: "Island Top Offset", description: "Distance from the top edge.")
-                        Spacer(minLength: 8)
-                        DeferredValueEditor(value: islandTopOffsetBinding) { draft, onEditingChanged in
-                            HStack(spacing: 8) {
-                                Slider(value: draft, in: 0...40, step: 1, onEditingChanged: onEditingChanged)
-                                    .frame(width: 150)
-                                    .accessibilityLabel("Island Top Offset")
-                                Text("\(Int(draft.wrappedValue)) pt")
-                                    .monospacedDigit()
-                                    .frame(width: 42, alignment: .trailing)
-                            }
-                        }
-                    }
-                    .padding([.horizontal, .bottom])
-
-                    VStack(spacing: 0) {
-                        islandSlider("Side Padding", \.sidePadding, range: FloatingIslandStyle.sidePaddingRange)
-                        islandSlider("Center Gap", \.centerGap, range: FloatingIslandStyle.centerGapRange)
-                        islandSlider("Open Corner Radius", \.openCornerRadius, range: FloatingIslandStyle.openCornerRadiusRange)
-                        islandSlider("Open Padding", \.openPadding, range: FloatingIslandStyle.openPaddingRange)
-                    }
-                    HStack {
-                        Spacer()
-                        resetButton(visible: hasIslandStyleOverride, help: "Restore the default island spacing") {
-                            DisplaySettingsKey.removeValue(
-                                from: &settings.settings.perDisplayFloatingIslandStyle,
-                                for: screen.displayIdentifier,
-                                connectedKeys: NSScreen.screens.map(\.displayIdentifier)
-                            )
-                        }
-                    }
-                    .padding([.horizontal, .bottom])
+                    islandSlider("Side Padding", \.sidePadding, range: FloatingIslandStyle.sidePaddingRange)
+                    islandSlider("Center Gap", \.centerGap, range: FloatingIslandStyle.centerGapRange)
+                    islandSlider("Open Corner Radius", \.openCornerRadius, range: FloatingIslandStyle.openCornerRadiusRange)
+                    islandSlider("Open Padding", \.openPadding, range: FloatingIslandStyle.openPaddingRange)
                 }
-                .transition(.opacity)
+                HStack {
+                    Spacer()
+                    resetButton(visible: hasIslandStyleOverride, help: "Restore the default island spacing") {
+                        DisplaySettingsKey.removeValue(
+                            from: &settings.settings.perDisplayFloatingIslandStyle,
+                            for: screen.displayIdentifier,
+                            connectedKeys: NSScreen.screens.map(\.displayIdentifier)
+                        )
+                    }
+                }
+                .padding([.horizontal, .bottom])
             }
+            .transition(.opacity)
         }
     }
 
@@ -423,6 +461,13 @@ private struct PerDisplaySettingsCard: View {
         Binding(
             get: { settings.settings.value.resolvedHideNotchWhenInactive(forDisplayID: displayID) },
             set: { settings.settings.perDisplayHideNotchWhenInactive[displayID] = $0 }
+        )
+    }
+
+    private var hardwareCapsuleBinding: Binding<Bool> {
+        Binding(
+            get: { settings.settings.value.resolvedFloatingCapsuleBelowHardwareNotch(forDisplayID: displayID) },
+            set: { settings.settings.perDisplayFloatingCapsuleBelowHardwareNotch[displayID] = $0 }
         )
     }
 

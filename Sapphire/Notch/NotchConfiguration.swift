@@ -342,8 +342,11 @@ struct ResolvedNotchConfiguration: Equatable {
         self.displayScale = metrics.scale
         self.cameraWidth = metrics.cameraWidth ?? 0
         self.isNotchless = !metrics.hasHardwareNotch
-        self.isFloatingIsland = settings.resolvedFloatingIsland(forDisplayID: displayID)
-            && !metrics.hasHardwareNotch
+        self.isFloatingIsland = NotchFloatingCapsule.enablesFloatingIsland(
+            hasHardwareNotch: metrics.hasHardwareNotch,
+            notchlessFloating: settings.resolvedFloatingIsland(forDisplayID: displayID),
+            hardwareNotchOptIn: settings.resolvedFloatingCapsuleBelowHardwareNotch(forDisplayID: displayID)
+        )
 
         self.activityContentHorizontalPadding = 15
         let islandStyle = settings.resolvedFloatingIslandStyle(forDisplayID: displayID)
@@ -366,9 +369,10 @@ struct ResolvedNotchConfiguration: Equatable {
             self.dragActivationCollapseDelay = NotchConfiguration.dragActivationCollapseDelay
             self.widgetBlurRadiusMax = NotchConfiguration.widgetBlurRadiusMax
             self.activityBlurRadiusMax = NotchConfiguration.activityBlurRadiusMax
-            self.expandedShadowColor = isNotchless ? Color.black.opacity(0.5) : NotchConfiguration.expandedShadowColor
-            self.expandedShadowRadius = isNotchless ? 28 : NotchConfiguration.expandedShadowRadius
-            self.expandedShadowOffsetY = isNotchless ? 14 : NotchConfiguration.expandedShadowOffset.y
+            let separated = isFloatingIsland || isNotchless
+            self.expandedShadowColor = separated ? Color.black.opacity(0.5) : NotchConfiguration.expandedShadowColor
+            self.expandedShadowRadius = separated ? 28 : NotchConfiguration.expandedShadowRadius
+            self.expandedShadowOffsetY = separated ? 14 : NotchConfiguration.expandedShadowOffset.y
             self.restingShadowOpacity = isFloatingIsland ? 0.32 : 0
             self.restingShadowRadius = 7
             self.restingShadowOffsetY = 3
@@ -409,7 +413,9 @@ struct ResolvedNotchConfiguration: Equatable {
                 userOffset: settings.resolvedFloatingIslandTopOffset(forDisplayID: displayID),
                 islandHeight: closedSize.height,
                 menuBarHeight: metrics.menuBarHeight,
-                scale: metrics.scale
+                scale: metrics.scale,
+                safeAreaTop: metrics.menuBarHeight,
+                hasHardwareNotch: metrics.hasHardwareNotch
             )
             : 0
 

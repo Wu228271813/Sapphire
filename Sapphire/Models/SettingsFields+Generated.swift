@@ -28,6 +28,7 @@ extension SettingsField {
         SettingsField(\.perDisplayFloatingIsland),
         SettingsField(\.perDisplayFloatingIslandTopOffset),
         SettingsField(\.perDisplayFloatingIslandStyle),
+        SettingsField(\.perDisplayFloatingCapsuleBelowHardwareNotch),
         SettingsField(\.perDisplayNotchWidgetAppearance),
         SettingsField(\.perDisplayNotchLiveActivityAppearance),
         SettingsField(\.useCustomNotchConfiguration),

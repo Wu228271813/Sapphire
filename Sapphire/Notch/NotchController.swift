@@ -1755,7 +1755,7 @@ struct NotchController: View {
                     navigationStack = [.fileShelf]
                     notchState = .clickExpanded
                 }
-        } else if settings.settings.expandOnHover && !isFullViewActivity && !isInteractiveLiveActivity {
+        } else if opensPanelOnHover(config: config) && !isFullViewActivity && !isInteractiveLiveActivity {
                 if notchState != .clickExpanded {
                     self.expansionAnimation = config.expandAnimation
                     var targetStack: [NotchWidgetMode]
@@ -1777,7 +1777,7 @@ struct NotchController: View {
                             guard !Task.isCancelled, self.isHovered else { return }
                             guard !self.dragManager.isDraggingInActivationZone else { return }
                             guard self.notchState != .clickExpanded else { return }
-                            guard settings.settings.expandOnHover else { return }
+                            guard let config = self.config, self.opensPanelOnHover(config: config) else { return }
                             guard !self.isInteractiveLiveActivity else { return }
                             guard !self.shouldSuppressHoverExpansionForLiveActivity else { return }
                             self.notchState = .clickExpanded
@@ -3064,7 +3064,7 @@ struct NotchController: View {
         }
         let keepsExpandedHover = isHovered && notchState != .initial
         let margin = keepsExpandedHover ? Self.expandedHoverStayMargin : Self.hoverDetectionMargin
-        let detectionBounds = interactiveBounds.insetBy(dx: -margin, dy: -margin)
+        let detectionBounds = expandedHoverRect(interactiveBounds, margin: margin, config: config, window: window)
         let isPointerInside = detectionBounds.contains(mouseLocation)
 
         if !isInteractive, !isNear, scratch.lastSampledMouseLocation == mouseLocation {
@@ -3150,7 +3150,37 @@ struct NotchController: View {
             height: max(notchHeight, showsSatellites ? layout.centerY + layout.diameter / 2 : 0)
         ).integral
 
-        return frame.insetBy(dx: -1, dy: -1)
+        return cappedToCapsuleTop(frame.insetBy(dx: -1, dy: -1), config: config, contentMaxY: contentBounds.maxY)
+    }
+
+    private func opensPanelOnHover(config: ResolvedNotchConfiguration) -> Bool {
+        NotchFloatingCapsule.opensPanelOnHover(
+            expandOnHover: settings.settings.expandOnHover,
+            hardwareNotchCapsule: config.isFloatingIsland && !config.isNotchless
+        )
+    }
+
+    private func expandedHoverRect(_ rect: CGRect, margin: CGFloat, config: ResolvedNotchConfiguration, window: NSWindow) -> CGRect {
+        let expanded = rect.insetBy(dx: -margin, dy: -margin)
+        let contentBounds = (window.contentView as? NotchStageContainerView)?.stageFrame
+            ?? window.contentView?.bounds
+            ?? .zero
+        return cappedToCapsuleTop(expanded, config: config, contentMaxY: contentBounds.maxY)
+    }
+
+    private func cappedToCapsuleTop(_ rect: CGRect, config: ResolvedNotchConfiguration, contentMaxY: CGFloat) -> CGRect {
+        guard config.isFloatingIsland, !config.isNotchless else { return rect }
+        let ceiling = contentMaxY - (config.topInset - config.topBuffer)
+        let limited = NotchFloatingCapsule.limitTop(
+            NotchFloatingCapsule.Rect(
+                x: Double(rect.minX),
+                y: Double(rect.minY),
+                width: Double(rect.width),
+                height: Double(rect.height)
+            ),
+            to: Double(ceiling)
+        )
+        return CGRect(x: limited.x, y: limited.y, width: limited.width, height: limited.height)
     }
 
     private func toRestorableMenu(mode: NotchWidgetMode) -> RestorableNotchMenu? {
@@ -3296,8 +3326,12 @@ struct NotchController: View {
 
         let pointerIsInInteractionBounds: Bool
         if let config {
-            let frame = interactiveFrame(for: window, config: config)
-                .insetBy(dx: -Self.hoverDetectionMargin, dy: -Self.hoverDetectionMargin)
+            let frame = expandedHoverRect(
+                interactiveFrame(for: window, config: config),
+                margin: Self.hoverDetectionMargin,
+                config: config,
+                window: window
+            )
             pointerIsInInteractionBounds = frame.contains(window.mouseLocationOutsideOfEventStream)
         } else {
             pointerIsInInteractionBounds = false
@@ -3312,11 +3346,13 @@ struct NotchController: View {
         }
 
         if let config {
-            let frame = interactiveFrame(for: window, config: config)
-            hoverMonitor?.update(
-                hoverRect: frame.insetBy(dx: -Self.hoverDetectionMargin, dy: -Self.hoverDetectionMargin),
-                pointerIsInside: isHovered
+            let frame = expandedHoverRect(
+                interactiveFrame(for: window, config: config),
+                margin: Self.hoverDetectionMargin,
+                config: config,
+                window: window
             )
+            hoverMonitor?.update(hoverRect: frame, pointerIsInside: isHovered)
         }
     }
 
@@ -3390,8 +3426,12 @@ struct NotchController: View {
                   generation == self.scratch.widgetSwitchProtectionGeneration,
                   let window = self.notchWindow,
                   let config = self.config else { return }
-            let hoverBounds = self.interactiveFrame(for: window, config: config)
-                .insetBy(dx: -Self.hoverCollapseMargin, dy: -Self.hoverCollapseMargin)
+            let hoverBounds = self.expandedHoverRect(
+                self.interactiveFrame(for: window, config: config),
+                margin: Self.hoverCollapseMargin,
+                config: config,
+                window: window
+            )
             guard hoverBounds.contains(window.mouseLocationOutsideOfEventStream) else { return }
             self.scratch.widgetSwitchProtectionTask?.cancel()
             self.scratch.widgetSwitchProtectionTask = nil
@@ -3413,7 +3453,7 @@ struct NotchController: View {
         let interactiveBounds = interactiveFrame(for: window, config: config)
         let hoverBounds = notchState == .initial
             ? interactiveBounds
-            : interactiveBounds.insetBy(dx: -Self.hoverCollapseMargin, dy: -Self.hoverCollapseMargin)
+            : expandedHoverRect(interactiveBounds, margin: Self.hoverCollapseMargin, config: config, window: window)
         guard !hoverBounds.contains(mouseLocation) else { return }
         guard !dragManager.isDraggingInActivationZone && !windowDrag.isDragging else { return }
         scheduleCollapse(after: 0)

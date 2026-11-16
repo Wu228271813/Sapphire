@@ -148,12 +148,21 @@ struct NotchDisplayMetrics: Equatable {
         return (value * scale + 0.5).rounded(.down) / scale
     }
 
-    static func floatingIslandTopInset(userOffset: CGFloat, islandHeight: CGFloat, menuBarHeight: CGFloat, scale: CGFloat) -> CGFloat {
-        snapToPixel(max(0, userOffset), scale: scale)
+    static func floatingIslandTopInset(
+        userOffset: CGFloat,
+        islandHeight _: CGFloat,
+        menuBarHeight _: CGFloat,
+        scale: CGFloat,
+        safeAreaTop: CGFloat = 0,
+        hasHardwareNotch: Bool = false
+    ) -> CGFloat {
+        return CGFloat(NotchFloatingCapsule.topInset(
+            userOffset: Double(userOffset),
+            safeAreaTop: Double(safeAreaTop),
+            hasHardwareNotch: hasHardwareNotch,
+            scale: Double(scale)
+        ))
     }
-
-    static let floatingIslandHeightOverBar: CGFloat = 2
-    static let floatingIslandWidthPerHeight: CGFloat = 3.5
 
     static func resolvedClosedSize(
         measured: NotchDisplayMetrics,
@@ -162,16 +171,21 @@ struct NotchDisplayMetrics: Equatable {
         isFloatingIsland: Bool,
         floatingIslandMinimumHeight: CGFloat
     ) -> CGSize {
+        if isFloatingIsland {
+            let capsule = NotchFloatingCapsule.closedSize(
+                menuBarHeight: Double(measured.menuBarHeight),
+                customWidth: Double(customWidth),
+                customHeight: Double(customHeight),
+                scale: Double(measured.scale),
+                minimumHeight: Double(floatingIslandMinimumHeight)
+            )
+            return CGSize(width: capsule.width, height: capsule.height)
+        }
         var width = customWidth > 0 ? customWidth : measured.closedSize.width
         var height = customHeight > 0 ? customHeight : measured.closedSize.height
         if measured.hasHardwareNotch {
             width = max(width, measured.closedSize.width)
             height = max(height, measured.menuBarHeight)
-        }
-        if isFloatingIsland {
-            let natural = measured.menuBarHeight + floatingIslandHeightOverBar
-            height = max(customHeight > 0 ? customHeight : natural, floatingIslandMinimumHeight)
-            if customWidth <= 0 { width = height * floatingIslandWidthPerHeight }
         }
         return CGSize(
             width: snapToEvenPixels(width, scale: measured.scale),
