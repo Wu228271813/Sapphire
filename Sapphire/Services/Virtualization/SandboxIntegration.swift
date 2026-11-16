@@ -275,7 +275,7 @@ final class SandboxIntegration {
             )
         } else {
             integrationDirectory = applicationSupport?
-                .appendingPathComponent("Sapphire", isDirectory: true)
+                .appendingPathComponent(SapphireLocalIsolation.supportDirectoryName, isDirectory: true)
                 .appendingPathComponent(
                     SapphireVMLifecycleContract.integrationDirectoryName,
                     isDirectory: true

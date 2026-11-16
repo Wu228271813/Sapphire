@@ -58,6 +58,7 @@ enum LaunchAtLoginReconciler {
     private static let queue = DispatchQueue(label: "com.sapphire.launch-at-login", qos: .utility)
 
     static func reconcile(wanted: Bool, isUserChange: Bool, adopt: @escaping @MainActor (Bool) -> Void) {
+        guard !SapphireLocalIsolation.skipsPrivilegedRegistration else { return }
         let onboardingComplete = !OnboardingLaunchPolicy.shouldShowOnboarding
         queue.async {
             let service = SMAppService.mainApp

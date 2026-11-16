@@ -2211,10 +2211,7 @@ enum SettingsPersistence {
     static let settingsBackupFileName = "settings.backup.json"
 
     static var directoryURL: URL {
-        let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Sapphire", isDirectory: true)
-        try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-        return url
+        SapphireLocalIsolation.applicationSupportDirectory()
     }
 
     static var fileURL: URL { directoryURL.appendingPathComponent(settingsFileName) }

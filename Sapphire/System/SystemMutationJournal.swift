@@ -46,8 +46,7 @@ final class SystemMutationJournal: @unchecked Sendable {
     }
 
     private static var defaultURL: URL? {
-        FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("Sapphire", isDirectory: true)
+        SapphireLocalIsolation.applicationSupportDirectory(create: false)
             .appendingPathComponent("SystemState", isDirectory: true)
             .appendingPathComponent("system-mutations.json", isDirectory: false)
     }

@@ -99,4 +99,33 @@ Check.close(capped.width, hovered.width, "width stays")
 let alreadyClear = NotchFloatingCapsule.Rect(x: 10, y: 10, width: 20, height: 20)
 let unchanged = NotchFloatingCapsule.limitTop(alreadyClear, to: 40)
 Check.equal(unchanged, alreadyClear, "rect under the ceiling is unchanged")
+
+Check.equal(
+    SapphireLocalIsolation.supportDirectoryName(forBundleIdentifier: "com.cshariq.sapphire"),
+    "Sapphire",
+    "shipping bundle keeps Application Support/Sapphire")
+Check.equal(
+    SapphireLocalIsolation.skipsPrivilegedRegistration(forBundleIdentifier: "com.cshariq.sapphire"),
+    false,
+    "shipping bundle can still register its helper")
+Check.equal(
+    SapphireLocalIsolation.supportDirectoryName(forBundleIdentifier: nil),
+    "Sapphire",
+    "missing bundle id keeps the production folder")
+Check.equal(
+    SapphireLocalIsolation.supportDirectoryName(forBundleIdentifier: SapphireLocalIsolation.localUITestBundleIdentifier),
+    "SapphireFloatingCapsuleTest",
+    "local UI test bundle uses its own support folder")
+Check.equal(
+    SapphireLocalIsolation.skipsPrivilegedRegistration(forBundleIdentifier: SapphireLocalIsolation.localUITestBundleIdentifier),
+    true,
+    "local UI test bundle does not register the helper or a login item")
+Check.equal(
+    SapphireLocalIsolation.faceIDKeychainService(forBundleIdentifier: "com.cshariq.sapphire"),
+    "com.shariq.Sapphire.faceid.keychain",
+    "shipping bundle keeps the Face ID keychain service")
+Check.equal(
+    SapphireLocalIsolation.faceIDKeychainService(forBundleIdentifier: SapphireLocalIsolation.localUITestBundleIdentifier),
+    "com.local.sapphire.floatingcapsule.test.faceid.keychain",
+    "local UI test bundle uses its own Face ID keychain service")
 }

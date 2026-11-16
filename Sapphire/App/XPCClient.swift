@@ -19,6 +19,7 @@ final class XPCClient {
     private init() {}
 
     func proxy(onError: ((Error) -> Void)? = nil) -> HelperProtocol? {
+        guard !SapphireLocalIsolation.skipsPrivilegedRegistration else { return nil }
         start()
 
         lock.lock()
@@ -39,6 +40,7 @@ final class XPCClient {
     }
 
     func start(force: Bool = false) {
+        guard !SapphireLocalIsolation.skipsPrivilegedRegistration else { return }
         var oldConnection: NSXPCConnection?
         var newConnection: NSXPCConnection?
 

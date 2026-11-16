@@ -262,9 +262,7 @@ final class FocusSessionManager: ObservableObject {
     private var streakMonthBook: [String: FocusStreakMonth] = [:]
 
     private init() {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Sapphire", isDirectory: true)
-        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        let base = SapphireLocalIsolation.applicationSupportDirectory()
         historyURL = base.appendingPathComponent("focus-sessions.json")
         dailyURL = base.appendingPathComponent("focus-daily.json")
         streakURL = base.appendingPathComponent("focus-streaks.json")

@@ -1522,6 +1522,11 @@
 			);
 			shellPath = /bin/sh;
 			shellScript = (
+				"if [ \"${SAPPHIRE_SKIP_CRASHLYTICS_UPLOAD:-}\" = \"YES\" ]; then",
+				"  echo \"Skipping Crashlytics symbol upload for the local UI test build\"",
+				"  touch \"${SCRIPT_OUTPUT_FILE_0}\"",
+				"  exit 0",
+				"fi",
 				"set -e",
 				"\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"",
 				"touch \"${SCRIPT_OUTPUT_FILE_0}\"",
@@ -2096,7 +2101,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				AUTOMATION_APPLE_EVENTS = YES;
-				CODE_SIGN_ENTITLEMENTS = Sapphire/SapphireDebug.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SAPPHIRE_APP_ENTITLEMENTS)";
+				SAPPHIRE_APP_ENTITLEMENTS = Sapphire/SapphireDebug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2120,7 +2126,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/PrivateHeaders";
 				INFOPLIST_FILE = Sapphire/App/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Sapphire;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(SAPPHIRE_APP_DISPLAY_NAME)";
+				SAPPHIRE_APP_DISPLAY_NAME = Sapphire;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Sapphire controls playback in Music and Spotify, and reads and types into your Terminal or iTerm tabs when you send a message or command to a running task from the notch.";
@@ -2157,8 +2164,10 @@
 				OTHER_LDFLAGS = "";
 				OTHER_SWIFT_FLAGS = "";
 				"OTHER_SWIFT_FLAGS[arch=*]" = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.cshariq.sapphire;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SAPPHIRE_APP_BUNDLE_IDENTIFIER)";
+				SAPPHIRE_APP_BUNDLE_IDENTIFIER = com.cshariq.sapphire;
+				PRODUCT_NAME = "$(SAPPHIRE_APP_PRODUCT_NAME)";
+				SAPPHIRE_APP_PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;
@@ -2182,7 +2191,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				AUTOMATION_APPLE_EVENTS = YES;
-				CODE_SIGN_ENTITLEMENTS = Sapphire/Sapphire.entitlements;
+				CODE_SIGN_ENTITLEMENTS = "$(SAPPHIRE_APP_ENTITLEMENTS)";
+				SAPPHIRE_APP_ENTITLEMENTS = Sapphire/Sapphire.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -2204,7 +2214,8 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/PrivateHeaders";
 				INFOPLIST_FILE = Sapphire/App/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Sapphire;
+				INFOPLIST_KEY_CFBundleDisplayName = "$(SAPPHIRE_APP_DISPLAY_NAME)";
+				SAPPHIRE_APP_DISPLAY_NAME = Sapphire;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSAppleEventsUsageDescription = "Sapphire controls playback in Music and Spotify, and reads and types into your Terminal or iTerm tabs when you send a message or command to a running task from the notch.";
@@ -2240,8 +2251,10 @@
 				OTHER_CODE_SIGN_FLAGS = "";
 				OTHER_LDFLAGS = "";
 				OTHER_SWIFT_FLAGS = "";
-				PRODUCT_BUNDLE_IDENTIFIER = com.cshariq.sapphire;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(SAPPHIRE_APP_BUNDLE_IDENTIFIER)";
+				SAPPHIRE_APP_BUNDLE_IDENTIFIER = com.cshariq.sapphire;
+				PRODUCT_NAME = "$(SAPPHIRE_APP_PRODUCT_NAME)";
+				SAPPHIRE_APP_PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
 				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = NO;

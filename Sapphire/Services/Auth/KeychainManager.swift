@@ -12,7 +12,9 @@ class KeychainManager {
     static let shared = KeychainManager()
     private init() {}
 
-    private let service = "com.shariq.Sapphire.faceid.keychain"
+    private var service: String {
+        SapphireLocalIsolation.faceIDKeychainService(forBundleIdentifier: Bundle.main.bundleIdentifier)
+    }
 
     func save(key: Data, for account: String) -> Bool {
         let status = KeychainStore.setItem(

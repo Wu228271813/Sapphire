@@ -29,9 +29,7 @@ final class FocusProfileStore: ObservableObject {
     private var suppressNotifyUntil = Date.distantPast
 
     private init() {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Sapphire", isDirectory: true)
-        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        let base = SapphireLocalIsolation.applicationSupportDirectory()
         url = base.appendingPathComponent("focus-profiles.json")
         activeProfileID = UUID()
         loadOrMigrate()

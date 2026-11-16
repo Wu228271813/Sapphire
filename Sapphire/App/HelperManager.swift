@@ -326,7 +326,10 @@ class HelperManager: ObservableObject {
     }
 
     nonisolated private static func registerDaemon() async -> String? {
-        await Task.detached(priority: .utility) {
+        if SapphireLocalIsolation.skipsPrivilegedRegistration {
+            return "Local UI test build does not register the helper."
+        }
+        return await Task.detached(priority: .utility) {
             let service = SMAppService.daemon(plistName: sapphireHelperPlistName)
             do {
                 try service.register()
@@ -342,7 +345,10 @@ class HelperManager: ObservableObject {
     }
 
     nonisolated private static func unregisterDaemon() async -> String? {
-        await Task.detached(priority: .utility) {
+        if SapphireLocalIsolation.skipsPrivilegedRegistration {
+            return "Local UI test build does not change helper registration."
+        }
+        return await Task.detached(priority: .utility) {
             let service = SMAppService.daemon(plistName: sapphireHelperPlistName)
             do {
                 try service.unregister()
@@ -392,6 +398,7 @@ class HelperManager: ObservableObject {
     }
 
     func installIfNeeded() {
+        guard !SapphireLocalIsolation.skipsPrivilegedRegistration else { return }
         guard !OnboardingLaunchPolicy.shouldShowOnboarding else { return }
         Task { @MainActor [weak self] in
             guard let self else { return }

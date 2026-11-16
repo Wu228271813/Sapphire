@@ -125,9 +125,8 @@ enum LiveWallpaperPlaybackMode: String, Codable, CaseIterable, Identifiable {
 
 enum WallpaperAssetStore {
     static var directory: URL {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
-            ?? URL(fileURLWithPath: NSTemporaryDirectory())
-        return base.appendingPathComponent("Sapphire/Wallpapers", isDirectory: true)
+        SapphireLocalIsolation.applicationSupportDirectory()
+            .appendingPathComponent("Wallpapers", isDirectory: true)
     }
 
     static var postersDirectory: URL {

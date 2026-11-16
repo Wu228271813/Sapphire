@@ -174,9 +174,7 @@ class TimerManager: ObservableObject {
     private var logSyncPending = false
     private var alarmSound: NSSound?
     private lazy var sapphireTimerSaveURL: URL = {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Sapphire", isDirectory: true)
-        try? FileManager.default.createDirectory(at: base, withIntermediateDirectories: true)
+        let base = SapphireLocalIsolation.applicationSupportDirectory()
         return base.appendingPathComponent("sapphire-timers.json")
     }()
 
