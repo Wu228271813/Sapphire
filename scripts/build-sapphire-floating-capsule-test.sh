@@ -29,6 +29,8 @@ cd "$ROOT"
 # Standard settings such as CODE_SIGN_ENTITLEMENTS are not passed here:
 # xcodebuild would apply them to Swift package targets, which then look for
 # Sapphire/SapphireLocalUITest.entitlements inside their own checkouts.
+# SAPPHIRE_LOCAL_ENABLE_PREVIEWS=NO stops Xcode from linking Target.__preview.dylib.
+# That extra link is what carried -Xlinker -no_adhoc_codesign. Shipping builds keep previews on.
 xcodebuild \
   -project Sapphire.xcodeproj \
   -scheme Sapphire \
@@ -41,6 +43,7 @@ xcodebuild \
   SAPPHIRE_LOCAL_REGISTER_APP_GROUPS=NO \
   SAPPHIRE_APP_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements \
   SAPPHIRE_WIDGET_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements \
+  SAPPHIRE_LOCAL_ENABLE_PREVIEWS=NO \
   SAPPHIRE_SKIP_CRASHLYTICS_UPLOAD=YES \
   SAPPHIRE_APP_BUNDLE_IDENTIFIER=com.local.sapphire.floatingcapsule.test \
   SAPPHIRE_APP_PRODUCT_NAME=SapphireFloatingCapsuleTest \

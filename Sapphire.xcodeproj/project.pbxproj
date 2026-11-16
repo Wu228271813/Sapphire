@@ -145,10 +145,6 @@
 		F1CE00000000000000001AA /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = F1CE000000000000000002AA /* main.swift */; };
 		F1CE00000000000000002AA /* SapphireFinderSync.appex in Embed Finder Extensions */ = {isa = PBXBuildFile; fileRef = F1CE000000000000000001AA /* SapphireFinderSync.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F2DE000000000000000013BB /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000002BB /* FileProviderExtension.swift */; };
-		F2DE000000000000000014BB /* FileProviderItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000003BB /* FileProviderItem.swift */; };
-		F2DE000000000000000015BB /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000004BB /* FileProviderEnumerator.swift */; };
-		F2DE000000000000000016BB /* HostConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000005BB /* HostConnection.swift */; };
-		F2DE000000000000000017BB /* ContinuityFileProviderShared.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000006BB /* ContinuityFileProviderShared.swift */; };
 		F2DE000000000000000018BB /* SapphireFileProvider.appex in Embed Finder Extensions */ = {isa = PBXBuildFile; fileRef = F2DE000000000000000001BB /* SapphireFileProvider.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		F3A600000000000000000003 /* Yams in Frameworks */ = {isa = PBXBuildFile; productRef = F3A600000000000000000002 /* Yams */; };
 		F4C6BD0940E54C6EBC832604 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = FD831867A2F947938E17E286 /* FirebaseFirestore */; };
@@ -479,7 +475,7 @@
 		F1CE000000000000000004AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F1CE000000000000000005AA /* SapphireFinderSync.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SapphireFinderSync.entitlements; sourceTree = "<group>"; };
 		F2DE000000000000000001BB /* SapphireFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = SapphireFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		F2DE000000000000000002BB /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
+		F2DE000000000000000002BB /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = FileProviderExtension.swift; path = PublicExtensionStubs/FileProvider/FileProviderExtension.swift; sourceTree = SOURCE_ROOT; };
 		F2DE000000000000000003BB /* FileProviderItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderItem.swift; sourceTree = "<group>"; };
 		F2DE000000000000000004BB /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
 		F2DE000000000000000005BB /* HostConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostConnection.swift; sourceTree = "<group>"; };
@@ -1611,10 +1607,6 @@
 			isa = PBXSourcesBuildPhase;
 			files = (
 				F2DE000000000000000013BB /* FileProviderExtension.swift in Sources */,
-				F2DE000000000000000014BB /* FileProviderItem.swift in Sources */,
-				F2DE000000000000000015BB /* FileProviderEnumerator.swift in Sources */,
-				F2DE000000000000000016BB /* HostConnection.swift in Sources */,
-				F2DE000000000000000017BB /* ContinuityFileProviderShared.swift in Sources */,
 			);
 		};
 /* End PBXSourcesBuildPhase section */
@@ -2007,6 +1999,8 @@
 				SAPPHIRE_LOCAL_CODE_SIGN_STYLE = Automatic;
 				SAPPHIRE_LOCAL_DEVELOPMENT_TEAM = KVQFWJ7C7S;
 				SAPPHIRE_LOCAL_REGISTER_APP_GROUPS = YES;
+				ENABLE_PREVIEWS = "$(SAPPHIRE_LOCAL_ENABLE_PREVIEWS)";
+				SAPPHIRE_LOCAL_ENABLE_PREVIEWS = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -2080,6 +2074,8 @@
 				SAPPHIRE_LOCAL_CODE_SIGN_STYLE = Automatic;
 				SAPPHIRE_LOCAL_DEVELOPMENT_TEAM = KVQFWJ7C7S;
 				SAPPHIRE_LOCAL_REGISTER_APP_GROUPS = YES;
+				ENABLE_PREVIEWS = "$(SAPPHIRE_LOCAL_ENABLE_PREVIEWS)";
+				SAPPHIRE_LOCAL_ENABLE_PREVIEWS = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
@@ -2411,7 +2407,8 @@
 				DEVELOPMENT_TEAM = "$(SAPPHIRE_LOCAL_DEVELOPMENT_TEAM)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SapphireFileProvider/Info.plist;
+				INFOPLIST_FILE = "$(SAPPHIRE_FILEPROVIDER_INFOPLIST_FILE)";
+				SAPPHIRE_FILEPROVIDER_INFOPLIST_FILE = PublicExtensionStubs/FileProvider/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2442,7 +2439,8 @@
 				DEVELOPMENT_TEAM = "$(SAPPHIRE_LOCAL_DEVELOPMENT_TEAM)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = SapphireFileProvider/Info.plist;
+				INFOPLIST_FILE = "$(SAPPHIRE_FILEPROVIDER_INFOPLIST_FILE)";
+				SAPPHIRE_FILEPROVIDER_INFOPLIST_FILE = PublicExtensionStubs/FileProvider/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",

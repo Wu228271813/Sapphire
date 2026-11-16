@@ -29,6 +29,7 @@ forbidden = [
     "REGISTER_APP_GROUPS=",
     "PRODUCT_BUNDLE_IDENTIFIER=",
     "PRODUCT_NAME=",
+    "ENABLE_PREVIEWS=",
     "ARCHS=",
     "ONLY_ACTIVE_ARCH=",
 ]
@@ -45,6 +46,7 @@ required = [
     "SAPPHIRE_LOCAL_REGISTER_APP_GROUPS=NO",
     "SAPPHIRE_APP_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements",
     "SAPPHIRE_WIDGET_ENTITLEMENTS=Sapphire/SapphireLocalUITest.entitlements",
+    "SAPPHIRE_LOCAL_ENABLE_PREVIEWS=NO",
     "SAPPHIRE_APP_BUNDLE_IDENTIFIER=com.local.sapphire.floatingcapsule.test",
     "SAPPHIRE_APP_PRODUCT_NAME=SapphireFloatingCapsuleTest",
     "SAPPHIRE_SKIP_CRASHLYTICS_UPLOAD=YES",
@@ -73,8 +75,19 @@ if "SAPPHIRE_LOCAL_DEVELOPMENT_TEAM = KVQFWJ7C7S;" not in project:
     failures.append("the production team default is missing")
 if not (root / "PublicExtensionStubs/FileProvider/FileProvider.entitlements").is_file():
     failures.append("the public File Provider entitlements stub is missing")
-if "SAPPHIRE_FILEPROVIDER_ENTITLEMENTS = PublicExtensionStubs/FileProvider/FileProvider.entitlements;" not in project:
-    failures.append("the File Provider target does not default to the tracked entitlements stub")
+if "SAPPHIRE_FILEPROVIDER_INFOPLIST_FILE = PublicExtensionStubs/FileProvider/Info.plist;" not in project:
+    failures.append("File Provider Info.plist does not default to the tracked public stub")
+if "INFOPLIST_FILE = SapphireFileProvider/Info.plist;" in project:
+    failures.append("File Provider still requires the untracked private Info.plist")
+provider_sources = project.split("F2DE00000000000000000EBB /* Sources */", 1)[1].split("/* End PBXSourcesBuildPhase section */", 1)[0]
+if "FileProviderItem.swift" in provider_sources or "HostConnection.swift" in provider_sources:
+    failures.append("File Provider still compiles private sources that are not in this tree")
+if "PublicExtensionStubs/FileProvider/FileProviderExtension.swift" not in project:
+    failures.append("File Provider does not compile the tracked public stub")
+if "SAPPHIRE_LOCAL_ENABLE_PREVIEWS = YES;" not in project:
+    failures.append("shipping builds lost the SwiftUI preview default")
+if 'ENABLE_PREVIEWS = "$(SAPPHIRE_LOCAL_ENABLE_PREVIEWS)";' not in project:
+    failures.append("previews are not selected by the local test variable")
 
 bundle_ids = re.findall(r"PRODUCT_BUNDLE_IDENTIFIER = ([^;]+);", project)
 if bundle_ids.count('"$(SAPPHIRE_APP_BUNDLE_IDENTIFIER)"') != 2:
